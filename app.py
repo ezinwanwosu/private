@@ -59,6 +59,7 @@ def logout():
 def availability():
     if request.method == 'POST':
         data = request.get_json()
+        print(data)
         new = Availability(start=data['start'], end=data['end'])
         db.session.add(new)
         db.session.commit()
@@ -69,16 +70,27 @@ def availability():
             {'title': 'Available', 'start': slot.start, 'end': slot.end}
             for slot in all_slots
         ])
+
+
 @app.route('/api/availability/<date_str>', methods=['DELETE'])
 @login_required
 def delete_availability(date_str):
-    # Delete all availability for the specified date
-    slots_to_delete = Availability.query.filter(Availability.start.startswith(date_str)).all()
+    print("Delete requested for:", date_str[:-6])
+
+    slots_to_delete = Availability.query.filter(
+    Availability.start.like(f"{date_str[:-6]}%")
+    ).all()
+
+    print(f"Slots found to delete: {slots_to_delete}")
+
+    if not slots_to_delete:
+        return jsonify({'message': 'No availability found for that date'}), 404
+
     for slot in slots_to_delete:
         db.session.delete(slot)
-    db.session.commit()
-    return jsonify({'message': 'Availability removed'}), 200
 
+    db.session.commit()
+    return jsonify({'message': f'Deleted {len(slots_to_delete)} slots for {date_str}'}), 200
 if __name__ == '__main__':
     with app.app_context():
         db.create_all()
