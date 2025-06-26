@@ -4,6 +4,8 @@ from flask_login import LoginManager, UserMixin, login_user, login_required, log
 from flask_cors import CORS
 from datetime import datetime
 from models import db, User, Availability
+import os
+
 
 app = Flask(__name__)
 app.secret_key = 'von-UDBNdsjf-4nfd!f9'
@@ -85,4 +87,5 @@ if __name__ == '__main__':
             db.session.add(user)
             db.session.commit()
             print("Client user created.")
-    app.run(debug=True)
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host="0.0.0.0", port=port)
