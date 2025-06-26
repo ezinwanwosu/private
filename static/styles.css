@@ -8,6 +8,9 @@
   justify-content: center;
   align-items: center;
 }
+.fc-direction-ltr .fc-daygrid-event.fc-event-end, .fc-direction-rtl .fc-daygrid-event.fc-event-start{
+  background-color: #ffa4ee;
+}
 
 .modal-content {
   background-color: #ffa4ee;
@@ -63,10 +66,28 @@
   right: 50px;
   
 }
-.logout-link a{
+a.logout-link {
   text-decoration: none;
-  color: white;
+  color: black;
   border: 2px solid black;
-  border: 20px;
+  border-radius: 20px;
   padding: 0 20px;
+}
+@media (max-width: 900px){
+  .logout-link{
+  position: fixed;
+  top: 60%;
+  right: 50px;
+  
+  
+}
+}
+@media (max-width: 500px){
+  .logout-link{
+  position: fixed;
+  top: 90%;
+  right: 50px;
+  
+  
+}
 }
