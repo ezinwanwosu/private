@@ -9,6 +9,7 @@ import os
 
 app = Flask(__name__)
 app.secret_key = 'von-UDBNdsjf-4nfd!f9'
+API_TOKEN = 'von-UDBNdsjf-4nfd!f9'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///availability.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
@@ -16,7 +17,23 @@ db = SQLAlchemy(app)
 CORS(app)  # Allows your main site to fetch data
 login_manager = LoginManager(app)
 
+# -----Validate TOKEN ------
+from functools import wraps
+from flask import request, jsonify
 
+def token_required(f):
+    @wraps(f)
+    def decorated(*args, **kwargs):
+        auth_header = request.headers.get('Authorization')
+        if not auth_header or not auth_header.startswith('Bearer '):
+            return jsonify({'message': 'Token is missing!'}), 401
+        
+        token = auth_header.split(' ')[1]
+        if token != API_TOKEN:
+            return jsonify({'message': 'Invalid token!'}), 401
+
+        return f(*args, **kwargs)
+    return decorated
 
 # ----- Models -----
 class User(UserMixin, db.Model):
@@ -55,7 +72,7 @@ def logout():
 
 # ----- API -----
 @app.route('/api/availability', methods=['GET', 'POST'])
-@login_required
+@token_required
 def availability():
     if request.method == 'POST':
         data = request.get_json()
@@ -73,7 +90,7 @@ def availability():
 
 
 @app.route('/api/availability/<date_str>', methods=['DELETE'])
-@login_required
+@token_required
 def delete_availability(date_str):
     print("Delete requested for:", date_str[:-6])
 

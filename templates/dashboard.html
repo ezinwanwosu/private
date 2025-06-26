@@ -12,6 +12,7 @@
     <div id="calendar"></div>
     <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
     <script src="{{ url_for('static', filename='calendar.js') }}"></script>
+    <a href="{{ url_for('logout') }}" class="logout-link">Logout</a>
     <div id="popup-modal" class="modal">
         <div class="modal-content">
             <p id="popup-date-text">Manage availability for <span id="popup-date"></span>?</p>
