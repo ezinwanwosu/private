@@ -10,7 +10,7 @@ import os
 app = Flask(__name__)
 app.secret_key = 'von-UDBNdsjf-4nfd!f9'
 API_TOKEN = 'von-UDBNdsjf-4nfd!f9'
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///availability.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:////tmp/availability.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)
