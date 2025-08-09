@@ -1,93 +1,69 @@
-.modal {
-  display: none; /* Hidden by default */
-  position: fixed;
-  z-index: 1000;
-  left: 0; top: 0;
-  width: 100%; height: 100%;
-  background-color: rgba(0, 0, 0, 0.6); /* dark overlay */
-  justify-content: center;
-  align-items: center;
-}
-.fc-direction-ltr .fc-daygrid-event.fc-event-end, .fc-direction-rtl .fc-daygrid-event.fc-event-start{
-  background-color: #ffa4ee;
-}
-
-.modal-content {
-  background-color: #ffa4ee;
-  padding: 2rem;
-  border-radius: 20px;
+body {
+  font-family: Arial, sans-serif;
+  background-color: #fdf2f8; /* light pink */
   text-align: center;
-  max-width: 400px;
-  margin: auto;
-  box-shadow: 0 0 10px white;
-  font-size: 1.2rem;
+  padding: 20px;
 }
 
-.modal-buttons {
-  margin-top: 1rem;
-  display: flex;
-  justify-content: center;
-  gap: 1rem;
+h1 {
+  color: #d63384; /* deep pink */
 }
 
-.modal-buttons button {
-  font-size: 2rem;
-  padding: 0.5rem 1rem;
-  border: none;
-  border-radius: 12px;
-  cursor: pointer;
-  background: white;
-  transition: background 0.2s;
+.day-container {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 15px;
+  margin-top: 20px;
 }
 
-.modal-buttons button:hover {
-  background: #ffe0f0;
-}
-#calendar {
-  max-width: 900px;
-  margin: 40px auto;
-  height: 600px;  /* IMPORTANT: give it height */
-}
-.fc-event-title-container {
-  background-color: #ffa4ee;
-  border-color: #ffa4ee;
-  text-align: center;
-}
-#time-input {
-  margin-top: 1rem;
-  padding: 0.5rem;
+.day-box {
+  border: 2px solid #ff80ab;
   border-radius: 8px;
-  font-size: 1rem;
+  padding: 10px;
+  background: white;
+}
+
+.time-slot {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  margin-top: 10px;
+}
+
+.time-btn {
+  padding: 5px 10px;
+  border: 1px solid #ff80ab;
+  background: #ffe4ec;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.time-btn.selected {
+  background: #ff80ab;
+  color: white;
+}
+
+button {
+  margin-top: 20px;
+  padding: 10px 20px;
   border: none;
+  background: #d63384;
+  color: white;
+  font-size: 16px;
+  cursor: pointer;
+  border-radius: 5px;
 }
-.logout-link{
-  position: fixed;
-  top: 20px;
-  right: 50px;
-  
+
+button:hover {
+  background: #b62d70;
 }
-a.logout-link {
-  text-decoration: none;
-  color: black;
-  border: 2px solid black;
-  border-radius: 20px;
-  padding: 0 20px;
+.dates-list {
+  margin: 5px 0 15px 0;
+  padding-left: 20px;
+  font-size: 0.9rem;
+  list-style-type: none;
+  color: #555;
 }
-@media (max-width: 900px){
-  .logout-link{
-  position: fixed;
-  top: 60%;
-  right: 50px;
-  
-  
-}
-}
-@media (max-width: 500px){
-  .logout-link{
-  position: fixed;
-  top: 90%;
-  right: 50px;
-  
-  
-}
-}
+
+
