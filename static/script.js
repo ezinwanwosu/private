@@ -1,5 +1,5 @@
 const daysOfWeek = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
-const hours = [9, 10, 11, 12, 13, 14, 15, 16, 17]; // 1hr increments
+const hours = [9, 10, 11, 12, 13, 14, 15, 16, 17,18]; // 1hr increments
 
 const daysContainer = document.getElementById("days-container");
 const statusEl = document.getElementById("status");
