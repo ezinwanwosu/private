@@ -54,7 +54,11 @@ function createDayBox(day) {
     // Toggle selected class on click
     li.addEventListener("click", () => {
       li.classList.toggle("selected-date");
-      li.style.backgroundColor = "pink";
+      if (li.classList.contains("selected-date")) {
+        li.style.backgroundColor = "pink";
+      } else {
+        li.style.backgroundColor = "";  // reset to default when unselected
+      }
       
     });
     datesList.appendChild(li);
