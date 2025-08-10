@@ -66,4 +66,8 @@ button:hover {
   color: #555;
 }
 
-
+@media (max-width: 600px) {
+  .day-container {
+    grid-template-columns: 1fr; /* single column */
+  }
+}
