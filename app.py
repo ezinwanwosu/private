@@ -11,7 +11,7 @@ app = Flask(__name__)
 CORS(app, resources={r"/*": {"origins": "*"}}, supports_credentials=True)
 
 # Setup Google Cloud Storage client
-gcp_key = json.loads(os.getenv("GCP_KEY_JSON"))
+gcp_key = json.loads(os.getenv("GCP_SERVICE_ACCOUNT_JSON"))
 bucket_name = os.getenv("GCP_BUCKET_NAME")
 
 storage_client = storage.Client.from_service_account_info(gcp_key)
