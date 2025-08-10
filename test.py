@@ -1,32 +1,43 @@
-import requests
+import os
 import json
+import base64
+from dotenv import load_dotenv
+from google.cloud import storage
+from google.oauth2 import service_account
 
-# URL of your client app where availability is managed
-BASE_URL = "http://localhost:5000"  # Change if hosted remotely
+# Load .env file
+load_dotenv()
 
-def print_availability():
-    res = requests.get(f"{BASE_URL}/get-availability")
-    if res.ok:
-        print("Current availability:")
-        print(json.dumps(res.json(), indent=2))
-    else:
-        print("Failed to fetch availability:", res.status_code, res.text)
+# Get base64 string from .env and decode to JSON
+gcp_creds_b64 = os.getenv("GCP_SERVICE_ACCOUNT_JSON")
+if not gcp_creds_b64:
+    raise ValueError("No GCP_SERVICE_ACCOUNT_JSON_BASE64 found in .env")
 
-def remove_slot(start_time):
-    res = requests.post(f"{BASE_URL}/remove-availability", 
-                    json={"start": start_time},
-                    headers={"Content-Type": "application/json"})
+gcp_creds_json = base64.b64decode(gcp_creds_b64).decode("utf-8")
+credentials_info = json.loads(gcp_creds_json)
 
-    if res.ok:
-        print("Removal response:")
-        print(json.dumps(res.json(), indent=2))
-    else:
-        print("Failed to remove slot:", res.status_code, res.text)
+# Create GCS client
+credentials = service_account.Credentials.from_service_account_info(credentials_info)
+client = storage.Client(credentials=credentials)
 
-if __name__ == "__main__":
-    print_availability()
-    slot_to_remove = "2023-08-15T10:00:00"  # example slot to remove — replace with real slot start time
-    print(f"\nRemoving slot with start = {slot_to_remove}\n")
-    remove_slot(slot_to_remove)
-    print("\nAvailability after removal:")
-    print_availability()
+# Your bucket
+BUCKET_NAME = "yonces-availability"
+bucket = client.bucket(BUCKET_NAME)
+
+# Save availability.json
+def save_availability(data):
+    blob = bucket.blob("availability.json")
+    blob.upload_from_string(json.dumps(data, indent=2), content_type="application/json")
+    print("✅ Saved availability.json to GCS")
+
+# Load availability.json
+def load_availability():
+    blob = bucket.blob("availability.json")
+    if blob.exists():
+        return json.loads(blob.download_as_text())
+    return []
+
+# Test
+availability_data = [{"start": "2025-08-07T09:00:00"}]
+save_availability(availability_data)
+print("📄 Loaded from GCS:", load_availability())

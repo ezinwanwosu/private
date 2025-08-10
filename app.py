@@ -1,24 +1,39 @@
 import json
 import os
-from flask import Flask, request, jsonify,render_template
+from flask import Flask, request, jsonify, render_template
 from flask_cors import CORS
+from google.cloud import storage
+from dotenv import load_dotenv
+
+load_dotenv()
+
 app = Flask(__name__)
 CORS(app, resources={r"/*": {"origins": "*"}}, supports_credentials=True)
 
-AVAILABILITY_FILE = 'availability.json'
+# Setup Google Cloud Storage client
+gcp_key = json.loads(os.getenv("GCP_KEY_JSON"))
+bucket_name = os.getenv("GCP_BUCKET_NAME")
+
+storage_client = storage.Client.from_service_account_info(gcp_key)
+bucket = storage_client.bucket(bucket_name)
+blob_name = "availability.json"
 
 def load_availability():
-    if os.path.exists(AVAILABILITY_FILE):
-        with open(AVAILABILITY_FILE, "r") as f:
-            try:
-                return json.load(f)
-            except json.JSONDecodeError:
-                return []
-    return []
+    blob = bucket.blob(blob_name)
+    if not blob.exists():
+        return []
+    data = blob.download_as_text()
+    try:
+        return json.loads(data)
+    except json.JSONDecodeError:
+        return []
 
 def save_availability(data):
-    with open(AVAILABILITY_FILE, "w") as f:
-        json.dump(data, f, indent=2)
+    blob = bucket.blob(blob_name)
+    blob.upload_from_string(
+        json.dumps(data, indent=2),
+        content_type="application/json"
+    )
 
 availability_slots = load_availability()
 
@@ -35,30 +50,26 @@ def save_availability_route():
 
 @app.route("/get-availability")
 def get_availability():
-    return jsonify(availability_slots)
+    return jsonify(load_availability())
 
 @app.route("/remove-availability", methods=["POST"])
 def remove_availability():
-    print("remove-availability called")
     data = request.get_json()
-    print("Data received:", data)
     booked_start = data.get("start")
     if not booked_start:
         return jsonify({"error": "Missing slot start time"}), 400
 
     global availability_slots
-    availability_slots = [slot for slot in availability_slots if slot.get("start") != booked_start]
+    availability_slots = [
+        slot for slot in availability_slots if slot.get("start") != booked_start
+    ]
     save_availability(availability_slots)
-
     return jsonify({"message": "Slot removed", "remaining": availability_slots})
 
 @app.route("/")
 def dashboard():
-    print('rendering....')
     return render_template('dashboard.html')
-if __name__ == "__main__":
-    if __name__ == "__main__":
-        import os
-        port = int(os.environ.get("PORT", 5000))
-        app.run(host="0.0.0.0", port=port, debug=True)
 
+if __name__ == "__main__":
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host="0.0.0.0", port=port, debug=True)
